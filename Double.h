@@ -48,4 +48,12 @@ extern	int			operator >		(Double x, int y);
 extern	int			operator >		(Double x, double y);
 extern	void 		printDouble		(Double x);
 
+extern	Double		shift			(Double x); 
+extern	Double		cosApprox		(Double x);
+extern	Double		sinApprox		(Double x); 
+extern	Double		acosApprox		(Double x);
+extern 	Double		asinApprox		(Double x);
+extern 	Double		atanApprox		(Double x); 
+
+
 #endif
