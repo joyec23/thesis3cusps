@@ -63,9 +63,9 @@ Double distSquared(Point p, Point q) {
 }
 
 // computes one of the intersection points between two circles of radius r centered at p1 and p2
-Point intersectTwoCirc1( Point p1, Point p2, double r ) {
+Point intersectTwoCirc1( Point p1, Point p2, Double r ) {
     Double distSq = distSquared( p1, p2 );
-    if (distSq > pow(2*r, 2)) { 
+    if (smallDsize(distSq) > bigDsize(Pow(2*r, 2))) { 
         printf("Empty intersection. \n");
 		exit(1);
     } 
@@ -74,7 +74,7 @@ Point intersectTwoCirc1( Point p1, Point p2, double r ) {
     p3.y = 0.5 * (p1.y + p2.y); 
 
     Double b = distSquared(p1, p3); 
-    double h = sqrt(r*r - b.value);
+    double h = sqrt(r*r - b);
 
     Point p4; 
     p4.x = p3.x - h * (p2.y - p1.y) * (1 / (2 * sqrt(b)));
@@ -82,9 +82,9 @@ Point intersectTwoCirc1( Point p1, Point p2, double r ) {
     return p4; 
 }
 
-Point intersectTwoCirc2( Point p1, Point p2, double r) {
+Point intersectTwoCirc2( Point p1, Point p2, Double r) {
     Double distSq = distSquared( p1, p2 );
-    if (distSq > pow(2*r, 2)) { 
+    if (smallDsize(distSq) > bigDsize(Pow(2*r, 2))) { 
         printf("Empty intersection. \n");
 		exit(1);
     }
@@ -93,7 +93,7 @@ Point intersectTwoCirc2( Point p1, Point p2, double r) {
         p3.y = 0.5 * (p1.y + p2.y); 
 
         Double b = distSquared(p1, p3); 
-        double h = sqrt(r * r - b.value);
+        double h = sqrt(r * r - b);
 
         Point p4; 
         p4.x = p3.x + h * (p2.y - p1.y) * (1 / (2 * sqrt(b)));
@@ -101,44 +101,30 @@ Point intersectTwoCirc2( Point p1, Point p2, double r) {
         return p4; 
 }
     
-Point intersectTwoCircGen1( Point p1, Point p2, double r1, double r2) {
-    Double distSq = distSquared( p1, p2 );
-    Double dist = sqrt(distSq); 
+// WARNING: check for non-empty intersection before calling
+Point intersectTwoCircGen1( Point p1, Point p2, Double r1, Double r2) {
+    Double d = sqrt(distSquared( p1, p2 )); 
+    Double l = (r1 * r1 - r2 * r2 + d * d) / (2*d); 
+    Double h = sqrt(r1 * r1 - l * l); 
 
-    Double x = (r1*r1 - r2*r2 + distSq) / (2 * dist); 
-    if (p1.x > p2.x) { x = -x; }
-    double alpha = acos(x.value / r1); 
-    double beta = atan((p2.y.value - p1.y.value) / (p2.x.value - p1.x.value)); 
-
-    Point temp; 
-    temp.x = r1 * cos(alpha + beta) + p1.x;
-    temp.y = r1 * sin(alpha + beta) + p1.y; 
-
-    return temp; 
+    Double x = (l / d) * (p2.x - p1.x) + (h / d) * (p2.y - p1.y) + p1.x; 
+    Double y = (l / d) * (p2.y - p1.y) - (h / d) * (p2.x - p1.x) + p1.y; 
+    return MakePoint(x, y); 
 }
 
-Point intersectTwoCircGen2( Point p1, Point p2, double r1, double r2) {
-    Double distSq = distSquared( p1, p2 );
-    Double dist = sqrt(distSq);
+// WARNING: check for non-empty intersection before calling
+Point intersectTwoCircGen2( Point p1, Point p2, Double r1, Double r2) {
+    Double d = sqrt(distSquared( p1, p2 )); 
+    Double l = (r1 * r1 - r2 * r2 + d * d) / (2*d); 
+    Double h = sqrt(r1 * r1 - l * l); 
 
-    Double x = (r1*r1 - r2*r2 + distSq) / (2 * dist); 
-    if (p1.x > p2.x) { x = -x; } 
-    double alpha = acos(x.value / r1); 
-    double beta = atan((p2.y.value - p1.y.value) / (p2.x.value - p1.x.value)); 
-
-    // printf("            alpha = %4.2f, beta = %4.2f.\n", alpha, beta); 
-
-
-    Point temp; 
-    temp.x = r1 * cos(- alpha + beta) + p1.x;
-    temp.y = r1 * sin(- alpha + beta) + p1.y;
-    // printf("            temp = (%4.2f, %4.2f).\n", temp.x.value, temp.y.value); 
-
-    return temp; 
+    Double x = (l / d) * (p2.x - p1.x) - (h / d) * (p2.y - p1.y) + p1.x; 
+    Double y = (l / d) * (p2.y - p1.y) + (h / d) * (p2.x - p1.x) + p1.y; 
+    return MakePoint(x, y); 
 }
 
 // computes intersection point between circle of radius r centered at p and line passing through origin and p
-Point intersectCircLine1( Point p, double r) {
+Point intersectCircLine1( Point p, Double r) {
     Point temp; 
     Double A = 1 + Pow(p.y, 2) / Pow(p.x, 2);
     Double B = -2 * p.x - 2 * Pow(p.y, 2) / p.x; 
@@ -149,7 +135,7 @@ Point intersectCircLine1( Point p, double r) {
     return temp; 
 }
 
-Point intersectCircLine2( Point p, double r ) {
+Point intersectCircLine2( Point p, Double r ) {
     Point temp; 
     Double A = 1 + Pow(p.y, 2) / Pow(p.x, 2);
     Double B = -2 * p.x - 2 * Pow(p.y, 2) / p.x; 
@@ -161,7 +147,7 @@ Point intersectCircLine2( Point p, double r ) {
 }
 
 // computes intersection points between circle of radius r centered at p and line y = mx + b
-Point intersectCircLinGen1( Point p, double r, Double m, Double b) {
+Point intersectCircLinGen1( Point p, Double r, Double m, Double b) {
     Point temp; 
     Double A = m * m + 1.0; 
     Double B = -2 * p.x + 2*m*(b - p.y); 
@@ -183,32 +169,38 @@ Point intersectCircLinGen2( Point p, double r, Double m, Double b) {
     return temp; 
 }
 
-bool isIntersectTwoCirc(Point p1, Point p2, double r1, double r2) {
-    double distSq = distSquared(p1, p2).value; 
-    if (distSq > (r1+r2)*(r1+r2)) {
+bool isIntersectTwoCirc(Point p1, Point p2, Double r1, Double r2) {
+    Double distSq = distSquared(p1, p2); 
+    if (bigDsize(distSq) > smallDsize((r1+r2)*(r1+r2))) {
         return false;
     }
+    Double d = sqrt(distSquared( p1, p2 )); 
+    Double l = (r1 * r1 - r2 * r2 + d * d) / (2*d); 
+    Double hSq = r1 * r1 - l * l;
+    if (smallDsize(hSq) < 0) { return false; }
     else { return true; }
 }
 
-bool isIntersectCircLin( Point p, double r, Double m, Double b) {
+bool isIntersectCircLin( Point p, Double r, Double m, Double b) {
     Double A = m * m + 1.0;  
     Double B = -2 * p.x + 2*m*(b - p.y); 
     Double C = p.x * p.x + (b - p.y) * (b - p.y) - r*r;
 
-    double disc = B.value*B.value - 4*A.value*C.value; 
+    Double disc = B * B - 4 * A * C; 
     // printf("disc = %6.5f.\n", disc); 
-    if (disc < 0.0) {
+    if (smallDsize(disc) < 0.0) {
         return false; 
     }
-
     else { return true; }
 }
 
 bool isInP( Double l, Double b, Double h, Point p ) {
+    if (p.x < -b || p.x > l) { return false; }
+    if (p.y < 0.0 || p.y > h) { return false; }
     if (p.x < 0.0 + UU && p.y < -h / b * p.x) { return false; }
+    if ((p.x > -b && p.x < 0.0 + UU) && p.y > h) { return false; }
     if (p.x > 0.0 && p.x < l - b - UU && (p.y > h || p.y < 0)) { return false; }
-	if (p.x > l - b - UU && p.y > -h / b * p.x + l * h / b) { return false; }
+	if (p.x > l - b && (p.y > -h / b * (p.x - l) || p.y < 0)) { return false; }
     else { return true; }
 }
 
@@ -221,10 +213,10 @@ Point translateInP( Double l, Double b, Double h, Point p ) {
         p.x = p.x + temp * b; 
         
         double minX = (p.y * (-b / h)).value; 
-        p.x = p.x + minX; 
+        p.x = p.x - minX; 
         temp = p.x.value / l.value; 
         temp = floor(temp); 
-        p.x = p.x - temp * l - minX; // p.x should now be between minX and minX + l as desired.
+        p.x = p.x - temp * l + minX; // p.x should now be between minX and minX + l as desired.
 
         return p; 
     }
@@ -245,4 +237,42 @@ double angle( Point o, Point p ) {
         // p in first or second quadrant
         return acos(xrel);
     }
+}
+
+bool isIsolated(Point p, Point o, Point m, Point n, Double dist) {
+    // printf("boop20.\n"); 
+    Double distSq = dist * dist; 
+    if (distSquared(p, o) < distSq) { // printf("boop21.\n");  
+        return false; 
+    }
+    if (distSquared(p, m + o) < distSq) { // printf("boop22.\n");
+        return false; 
+    } 
+    if (distSquared(p, n + o) < distSq) { // printf("boop23.\n"); 
+        return false; 
+    }
+    if (distSquared(p, m + n + o) < distSq) { 
+        // Double distTemp = distSquared(p, m + n + o); 
+        // printf("p = (%6.5f, %6.5f) +- (%6.5f, %6.5f), m + n + o = (%6.5f, %6.5f) +- (%6.5f, %6.5f).\n", p.x.value, p.y.value, p.x.error, p.y.error, (m + n + o).x.value, (m + n + o).y.value, (m + n + o).x.error, (m + n + o).y.error);
+        // printf("    distSq = %6.5f +- %6.5f.\n", distTemp.value, distTemp.error); 
+        // printf("boop24.\n");
+        return false; 
+    }
+    if (distSquared(p, m + m + n + o) < distSq) {
+        return false;
+    }
+    else { return true; }
+}
+
+void isIsolatedPrint(Point p, Point o, Point m, Point n, Double dist) {
+    Double distSq = dist * dist; 
+    printf("G = (%6.5f, %6.5f) +- (%6.5f, %6.5f).\n", p.x.value, p.y.value, p.x.error, p.y.error);
+    printf("o = (%6.5f, %6.5f) +- (%6.5f, %6.5f).\n", o.x.value, o.y.value, o.x.error, o.y.error);
+    printf("m = (%6.5f, %6.5f) +- (%6.5f, %6.5f).\n", m.x.value, m.y.value, m.x.error, m.y.error);
+    printf("n = (%6.5f, %6.5f) +- (%6.5f, %6.5f).\n", n.x.value, n.y.value, n.x.error, n.y.error);
+    printf("    distSquared(p, o) = %6.5f +- %6.5f. \n", distSquared(p, o).value, distSquared(p, o).error); 
+    printf("    distSquared(p, m + o) = %6.5f +- %6.5f.\n", distSquared(p, m + o).value, distSquared(p, m + o).error); 
+    printf("    distSquared(p, n + o) = %6.5f +- %6.5f.\n", distSquared(p, n + o).value, distSquared(p, n + o).error); 
+    printf("    distSquared(p, m + n + o) = %6.5f +- %6.5f.\n", distSquared(p, m + n + o).value, distSquared(p, m + n + o).error);
+
 }
